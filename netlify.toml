@@ -1,4 +1,4 @@
-﻿# netlify.toml — Netlify deployment configuration
+# netlify.toml — Netlify deployment configuration
 
 [build]
   command   = "npm run build"
