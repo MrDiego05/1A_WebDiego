@@ -1,0 +1,9 @@
+﻿import { defineConfig } from "astro/config";
+
+// https://astro.build/config
+export default defineConfig({
+  // Static output — perfect for Netlify
+  output: "static",
+  // Base URL (update this to your actual Netlify subdomain or custom domain)
+  // site: "https://diegovizueta.netlify.app",
+});

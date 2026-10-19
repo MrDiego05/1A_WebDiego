@@ -1,0 +1,118 @@
+---
+// Contacto.astro — Contact section with links and references
+---
+
+<section
+  id="contacto"
+  class="snap-section"
+  data-contrast="light"
+  data-title="CONTACTO"
+>
+  <div class="sec-header">
+    <span class="sec-num">03</span>
+    <h2 class="sec-title">Contacto</h2>
+    <div class="sec-rule"></div>
+  </div>
+
+  <div class="contacto-layout">
+    <!-- Left: contact info -->
+    <div class="contacto-left">
+      <p class="contacto-headline">
+        ¿Tienes un proyecto o una oportunidad en mente?
+      </p>
+      <div class="contacto-links">
+        <a
+          href="mailto:diegovizueta7@gmail.com"
+          class="contacto-link"
+          id="link-email"
+        >
+          <span class="contacto-link-icon">@</span>
+          diegovizueta7@gmail.com
+          <span class="contacto-link-label">Email</span>
+        </a>
+        <a
+          href="https://linkedin.com/in/diegovizueta"
+          class="contacto-link"
+          target="_blank"
+          rel="noopener"
+          id="link-linkedin"
+        >
+          <span class="contacto-link-icon">in</span>
+          linkedin.com/in/diegovizueta
+          <span class="contacto-link-label">LinkedIn</span>
+        </a>
+        <a
+          href="https://github.com/MrDiego05"
+          class="contacto-link"
+          target="_blank"
+          rel="noopener"
+          id="link-github"
+        >
+          <span class="contacto-link-icon">&lt;/&gt;</span>
+          github.com/MrDiego05
+          <span class="contacto-link-label">GitHub</span>
+        </a>
+        <a href="#" class="contacto-link" id="link-location">
+          <span class="contacto-link-icon">📍</span>
+          Guayaquil, Ecuador
+          <span class="contacto-link-label">Ubicación</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: references -->
+    <div class="referencias-block">
+      <p class="ref-label">// REFERENCIAS</p>
+      <div class="ref-item">
+        <div class="ref-mark"></div>
+        <p class="ref-quote">
+          "Diego demuestra una capacidad excepcional para aprender tecnologías
+          nuevas y aplicarlas de forma efectiva en proyectos reales. Su actitud
+          colaborativa hace la diferencia."
+        </p>
+        <p class="ref-person">Lcdo. Joseph V.</p>
+        <p class="ref-role-co">Licenciado en Informatica - UG</p>
+      </div>
+      <div class="ref-item">
+        <div class="ref-mark"></div>
+        <p class="ref-quote">
+          "Trabajar con Diego fue fluido desde el primer día. Entrega lo que
+          promete, comunica bien y siempre busca mejorar la solución."
+        </p>
+        <p class="ref-person">Lcda. Gabriela Ramirez</p>
+        <p class="ref-role-co">Docente</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stickers anclados a la sección Contacto -->
+  <div class="section-stickers-layer" aria-hidden="true">
+    <div
+      class="neo-sticker sticker-black"
+      style="top: 14%; left: 70%; --rot: 4deg; transform: rotate(4deg);"
+      data-sticker
+    >
+      <div class="sticker-inner">
+        <img
+          draggable="false"
+          src="/public/stickers/4b99986bbd4415b20760544d55961309.png"
+          alt="sticker1"
+        />
+      </div>
+    </div>
+
+    <div
+      class="neo-sticker sticker-yellow"
+      style="top: 80%; left: 24%; --rot: -6deg; transform: rotate(-6deg);"
+      data-sticker
+    >
+      <div class="sticker-inner">
+        <img
+          draggable="false"
+          src="\public\stickers\9472f3475a7a0602353f3aae53b02bef.png"
+          alt="sticker1"
+        />
+      </div>
+    </div>
+  </div>
+</section>

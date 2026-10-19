@@ -1,0 +1,502 @@
+/* ===================================================
+   DESIGN TOKENS — SOFT NEO-BRUTALISM & HORIZONTAL CANVAS
+   =================================================== */
+:root {
+  --black: #0d0d0d;
+  --white: #ffffff;
+  --section-bg: #f4f4f6;
+  --gray-mid: #70706b;
+  --gray-light: #deded8;
+  --gray-dark: #2b2b28;
+  --orange: #ff5500;
+  --orange-dim: rgba(217, 72, 0, 0.95);
+  --teal: #0d7d6b;
+  --indigo: #3b3fd8;
+
+  /* Typography */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'Space Mono', 'Courier New', Courier, monospace;
+
+  /* Paper texture grain */
+  --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+
+  color-scheme: light;
+}
+
+#dev-toolbar-root {
+  display: hidden;
+}
+
+/* ── Dark Mode Tokens ── */
+:root[data-theme="dark"] {
+  --black: #f5f5f0;
+  --white: #0a0a0c;
+  --section-bg: #141417;
+  --gray-mid: #969690;
+  --gray-light: #2c2c30;
+  --gray-dark: #cccccc;
+  --orange: #ff661a;
+  --orange-dim: #e65200;
+  color-scheme: dark;
+}
+
+/* ── High Contrast Overrides ── */
+:root.a11y-high-contrast {
+  --black: #000000 !important;
+  --white: #ffffff !important;
+  --section-bg: #ffffff !important;
+  --gray-mid: #222222 !important;
+  --gray-light: #000000 !important;
+  --gray-dark: #000000 !important;
+  --orange: #ff4500 !important;
+}
+
+:root.a11y-high-contrast .snap-section {
+  background-color: #ffffff !important;
+}
+
+:root.a11y-high-contrast .nav-pill,
+:root.a11y-high-contrast .sidebar-btn {
+  border-width: 2.5px !important;
+  border-color: #000000 !important;
+}
+
+/* ── Dyslexia Friendly Mode ── */
+:root.a11y-dyslexia * {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+  letter-spacing: 0.06em !important;
+  word-spacing: 0.14em !important;
+  line-height: 1.85 !important;
+}
+
+/* ── Reduced Motion Mode ── */
+:root.a11y-reduce-motion * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===================================================
+   RESET & HORIZONTAL CANVAS BASE (Requirement 1)
+   =================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #ffffff;
+  color: var(--black);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+:root[data-theme="dark"] body {
+  background-color: #09090b;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===================================================
+   ANTIGRAVITY DOT GRID PATTERN (Main Page Only)
+   Inspired by Google Antigravity Technical Canvas
+   =================================================== */
+.antigravity-dot-grid {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-color: #ffffff;
+  background-image: radial-gradient(circle, rgba(13, 13, 13, 0.16) 1.25px, transparent 1.25px);
+  background-size: 24px 24px;
+  background-position: 0 0;
+}
+
+:root[data-theme="dark"] .antigravity-dot-grid {
+  background-color: #0c0c0e;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.17) 1.25px, transparent 1.25px);
+}
+
+/* Subtle grain overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: var(--grain);
+  background-size: 240px 240px;
+  pointer-events: none;
+  z-index: 80;
+}
+
+/* ===================================================
+   HORIZONTAL SCROLL CONTAINER — Smooth Center Snap (vicio.com UX)
+   =================================================== */
+.horizontal-scroll-container,
+#main-horizontal-container {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.horizontal-scroll-container::-webkit-scrollbar,
+#main-horizontal-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Base Section: 10px margin, rounded corners, strictly row items, 10px gap below navbar */
+.snap-section {
+  flex: 0 0 calc(100vw - 20px) !important;
+  min-width: calc(100vw - 20px) !important;
+  max-width: calc(100vw - 20px) !important;
+  width: calc(100vw - 20px) !important;
+  height: calc(100vh - 80px) !important;
+  margin: 70px 10px 10px 10px !important;
+  border-radius: 28px !important;
+  background-color: #f4f4f6;
+  box-sizing: border-box !important;
+  position: relative !important;
+  overflow-y: hidden !important;
+  overflow-x: hidden !important;
+  padding: 40px 5vw 30px 5vw;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+:root[data-theme="dark"] .snap-section {
+  background-color: #141417;
+  border-color: #2b2b30;
+}
+
+/* ===================================================
+   HEADER — FULL-WIDTH FIXED FLOATING CAPSULE NAVIGATION
+   =================================================== */
+.nav-container {
+  position: fixed;
+  top: 10px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  pointer-events: none;
+  padding: 0 10px;
+  box-sizing: border-box;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.floating-capsule-nav {
+  pointer-events: auto;
+  width: 100%;
+  height: 100%;
+  max-width: calc(100vw - 20px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.nav-home-sections,
+.projects-pills-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.nav-actions-group,
+.nav-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pill-proyectos-cta {
+  background: transparent;
+  color: var(--black);
+  border: 2px dashed var(--black);
+  padding: 13px 22px;
+  font-weight: 800;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+
+:root[data-theme="dark"] .pill-proyectos-cta {
+  color: var(--white);
+  border-color: var(--white);
+}
+
+.pill-proyectos-cta:hover {
+  background: var(--orange) !important;
+  border-color: var(--orange) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(255, 85, 0, 0.3);
+}
+
+/* Base Nav Pill Button */
+.nav-pill {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 12px 20px;
+  border-radius: 9999px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nav-pill:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.nav-pill:active {
+  transform: scale(0.97);
+}
+
+/* Bloque 1 (Inicio): Botón negro con esquinas redondeadas, texto blanco */
+.pill-inicio {
+  background: var(--black);
+  color: var(--white);
+  flex: 0 0 auto;
+  min-width: 90px;
+}
+
+.pill-inicio:hover {
+  border-radius: 15px;
+  transform: scale(1.03);
+  box-shadow: none;
+}
+
+/* Bloque 2 (Sobre Mí): Botón gris claro con esquinas redondeadas, texto negro */
+.pill-sobre {
+  background: #ececed;
+  color: #0d0d0d;
+  flex: 0 0 auto;
+  min-width: 105px;
+}
+
+:root[data-theme="dark"] .pill-sobre {
+  background: #ffffff21;
+  color: #ffffff;
+}
+
+.pill-sobre:hover {
+  border-radius: 15px;
+  transform: scale(1.03);
+  box-shadow: none;
+}
+
+:root[data-theme="dark"] .pill-sobre:hover {
+  border-radius: 15px;
+  box-shadow: none;
+}
+
+/* Bloque 3 (Experiencia): Botón naranja vibrante, esquinas redondeadas, texto negro */
+.pill-exp {
+  background: #ff5e00;
+  color: black;
+  flex: 0 0 auto;
+  border-radius: 15px;
+  min-width: 220px;
+}
+
+.pill-exp:hover {
+  border-radius: 30px;
+  transform: scale(1.03);
+  box-shadow: none;
+}
+
+/* Bloque 4 (Proyectos): Fondo transparente y borde discontinuo (dashed) negro, texto negro */
+.pill-proyectos {
+  background: transparent;
+  color: var(--black);
+  border: 1.5px dashed var(--black);
+  flex: 1 1 auto;
+  min-width: 250px;
+}
+
+:root[data-theme="dark"] .pill-proyectos {
+  color: white;
+  border-color: white;
+}
+
+.pill-proyectos:hover {
+  border-style: solid;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 15px;
+  transform: scale(1.03);
+}
+
+/* Bloque 5 (Contacto): Botón negro largo, texto blanco centrado */
+.pill-contacto {
+  background: var(--black);
+  color: var(--white);
+  border: 1px solid var(--black);
+  flex: 1.2 1 auto;
+  min-width: 260px;
+}
+
+:root[data-theme="dark"] .pill-contacto {
+  background: #ffffff;
+  color: #0d0d0d;
+  border-color: #ffffff;
+}
+
+.pill-contacto:hover {
+  box-shadow: none;
+  border-radius: 15px;
+  transform: scale(1.03);
+}
+
+/* Top Nav Action Icon Buttons */
+.nav-container .sidebar-btn {
+  flex-shrink: 0;
+  width: 43.59px;
+  height: 43.59px;
+  border-radius: 50%;
+  border: 1.5px solid var(--black);
+  background: var(--white);
+  color: var(--black);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, background-color 0.2s, color 0.2s;
+}
+
+.nav-container .sidebar-btn:hover {
+  transform: scale(1.08);
+  background: var(--black);
+  color: var(--white);
+}
+
+.nav-container .sidebar-btn-highlight {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+/* ===================================================
+   AUTOMATIC CONTRAST INVERSION SYSTEM (Requirement 2)
+   Inverts nav buttons dynamically over dark areas
+   =================================================== */
+
+
+
+/* ===================================================
+   SECTIONS SHARED STYLES
+   =================================================== */
+.sec-header {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  margin-bottom: 32px;
+}
+
+.sec-num {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--orange);
+  min-width: 28px;
+}
+
+.sec-title {
+  font-family: var(--font-mono);
+  font-size: clamp(26px, 3.5vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: black;
+}
+
+#sobre-mi .sec-title {
+  color: white;
+}
+
+.sec-rule {
+  flex: 1;
+  height: 1.5px;
+  background: var(--gray-light);
+  margin-left: 12px;
+}
+
+/* Focus Visible for Keyboard Users */
+:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 3px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .nav-pill {
+    font-size: 10px;
+    padding: 10px 14px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .snap-section {
+    padding: 75px 20px 60px 20px;
+  }
+
+  .nav-container {
+    top: 6px;
+    padding: 0 8px;
+  }
+
+  .floating-capsule-nav {
+    gap: 4px;
+    overflow-x: auto;
+  }
+
+  .nav-pill {
+    font-size: 9px;
+    padding: 8px 10px !important;
+  }
+
+  .nav-container .sidebar-btn {
+    width: 36px;
+    height: 36px;
+  }
+}
