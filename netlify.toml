@@ -1,16 +1,14 @@
-# netlify.toml — Netlify deployment configuration
-
 [build]
-  command   = "npm run build"
-  publish   = "dist"
+  command = "npm run build"
+  publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20"
 
-# SPA-style redirects so direct links always hit index.html
+# Redirecciones automáticas para páginas de Astro (gestiona slashes y rutas limpia)
 [[redirects]]
-  from   = "/*"
-  to     = "/index.html"
+  from = "/*"
+  to = "/:splat"
   status = 200
 
 # Security headers
