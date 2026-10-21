@@ -2,7 +2,7 @@
  * horizontal-nav.js
  * Fluid Inertia Scroll with Soft Auto-Centering (UX Vicio.com style):
  * - Effortless, silky-smooth horizontal scroll (never teleports, never stiff)
- * - Directionally-aware soft settling that glides gently to center the target section
+ * - Soft settling that glides gently to the nearest section
  * - Clean URL routing: resets to '/' at Inicio, prevents anchor trapping on reload
  * - Minimalist progress bar + single Return to Home button
  */
@@ -14,6 +14,7 @@ let currentX = 0;
 let isAnimating = false;
 let isUserInteracting = false;
 let settleTimer = null;
+let wheelStartX = null;
 let lastScrollDirection = 1; // 1 = forward (right), -1 = backward (left)
 
 function getSections() {
@@ -57,7 +58,7 @@ function glideTo(newTarget) {
 }
 
 // ── Soft Settling to Target Section Center ────────────────────
-function triggerSoftSettle() {
+function triggerSoftSettle(startX = null) {
   if (isUserInteracting || !container) return;
 
   const sections = getSections();
@@ -66,18 +67,7 @@ function triggerSoftSettle() {
   const scrollLeft = container.scrollLeft;
   const viewportWidth = container.clientWidth;
 
-  // 1. If we are anywhere near the beginning, or moving left into section 0, ALWAYS go to Inicio (0)
-  const sec1 = sections[1];
-  const sec1Offset = sec1 ? sec1.offsetLeft : viewportWidth;
-  if (scrollLeft <= viewportWidth * 0.4 || (lastScrollDirection < 0 && scrollLeft < sec1Offset * 0.85)) {
-    glideTo(0);
-    if (window.location.hash) {
-      history.replaceState(null, "", window.location.pathname);
-    }
-    return;
-  }
-
-  // 2. Find which section's center is closest to viewport center
+  // Find which section's center is closest to the viewport center.
   const centerPoint = scrollLeft + viewportWidth / 2;
   let closestIndex = 0;
   let minDist = Infinity;
@@ -93,16 +83,28 @@ function triggerSoftSettle() {
 
   let targetIndex = closestIndex;
 
-  // 3. Directional adjustment: if user was scrolling towards a neighbor, bias towards it
-  if (lastScrollDirection < 0 && closestIndex > 0) {
-    const currentSec = sections[closestIndex];
-    if (currentSec && scrollLeft < currentSec.offsetLeft + 100) {
-      targetIndex = closestIndex - 1;
-    }
-  } else if (lastScrollDirection > 0 && closestIndex < sections.length - 1) {
-    const currentSec = sections[closestIndex];
-    if (currentSec && scrollLeft > currentSec.offsetLeft - 100) {
-      targetIndex = closestIndex + 1;
+  // A mouse wheel gesture should make tangible progress even when its first
+  // delta is smaller than half a screen. Use the accumulated intended travel
+  // (not the in-flight animation position) to choose the adjacent panel.
+  if (startX !== null) {
+    const startCenter = startX + viewportWidth / 2;
+    let startIndex = 0;
+    let startDistance = Infinity;
+    sections.forEach((sec, idx) => {
+      const distance = Math.abs(sec.offsetLeft + sec.offsetWidth / 2 - startCenter);
+      if (distance < startDistance) {
+        startDistance = distance;
+        startIndex = idx;
+      }
+    });
+
+    const intendedTravel = targetX - startX;
+    const advanceThreshold = Math.max(80, viewportWidth * 0.1);
+    if (Math.abs(intendedTravel) >= advanceThreshold) {
+      targetIndex = Math.max(
+        0,
+        Math.min(sections.length - 1, startIndex + (intendedTravel > 0 ? 1 : -1))
+      );
     }
   }
 
@@ -199,44 +201,53 @@ export function initHorizontalNav() {
   //  1. FLUID CONTINUOUS WHEEL SCROLL + SOFT AUTO-SETTLE
   //     (Effortless glide to the next/prev section, never stiff)
   // ═══════════════════════════════════════════════════════════
-  window.addEventListener(
-    "wheel",
-    (e) => {
-      // Don't hijack inside accessibility panel
-      const a11yPanel = document.getElementById("a11y-advanced-panel");
-      if (a11yPanel && !a11yPanel.hidden && a11yPanel.contains(e.target)) {
-        return;
-      }
+  const handleWheel = (e) => {
+    // Don't hijack inside accessibility panel
+    const a11yPanel = document.getElementById("a11y-advanced-panel");
+    if (a11yPanel && !a11yPanel.hidden && a11yPanel.contains(e.target)) {
+      return;
+    }
 
-      e.preventDefault();
-      isUserInteracting = true;
+    e.preventDefault();
+    isUserInteracting = true;
 
       // Use dominant axis
-      const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-      if (Math.abs(delta) < 2) return;
+    let delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+    // Physical mouse wheels commonly report lines instead of pixels. Convert
+    // those values so a normal wheel notch visibly advances the canvas.
+    if (e.deltaMode === WheelEvent.DOM_DELTA_LINE) {
+      delta *= 40;
+    } else if (e.deltaMode === WheelEvent.DOM_DELTA_PAGE) {
+      delta *= container.clientWidth;
+    }
+    if (Math.abs(delta) < 2) return;
 
-      lastScrollDirection = delta > 0 ? 1 : -1;
+    lastScrollDirection = delta > 0 ? 1 : -1;
+    if (wheelStartX === null) wheelStartX = targetX;
 
       // Multiplier of 2.5 provides an effortless, responsive glide without resistance
-      const multiplier = 2.5;
-      const maxScroll = getMaxScroll();
-      targetX = Math.max(0, Math.min(maxScroll, targetX + delta * multiplier));
+    const multiplier = 2.5;
+    const maxScroll = getMaxScroll();
+    targetX = Math.max(0, Math.min(maxScroll, targetX + delta * multiplier));
 
-      if (!isAnimating) {
-        isAnimating = true;
-        currentX = container.scrollLeft;
-        requestAnimationFrame(animate);
-      }
+    if (!isAnimating) {
+      isAnimating = true;
+      currentX = container.scrollLeft;
+      requestAnimationFrame(animate);
+    }
 
       // Debounced soft settling when user stops scrolling
-      clearTimeout(settleTimer);
-      settleTimer = setTimeout(() => {
-        isUserInteracting = false;
-        triggerSoftSettle();
-      }, 240);
-    },
-    { passive: false }
-  );
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(() => {
+      isUserInteracting = false;
+      triggerSoftSettle(wheelStartX);
+      wheelStartX = null;
+    }, 360);
+  };
+
+  // Capture wheel input before a child element can consume it. This keeps the
+  // horizontal navigation available anywhere over the portfolio canvas.
+  document.addEventListener("wheel", handleWheel, { capture: true, passive: false });
 
   // ═══════════════════════════════════════════════════════════
   //  2. PROGRESS BAR & ACTIVE SECTION SPY
@@ -312,16 +323,12 @@ export function initHorizontalNav() {
     () => {
       updateProgress();
 
-      // If user is doing native touch/trackpad drag, keep currentX synchronized
+      // Native CSS scroll snap handles touch gestures. A final programmatic
+      // scroll event must not schedule another settle, or it can advance one
+      // extra section after a navigation click.
       if (!isAnimating) {
         currentX = container.scrollLeft;
         targetX = container.scrollLeft;
-
-        clearTimeout(settleTimer);
-        settleTimer = setTimeout(() => {
-          isUserInteracting = false;
-          triggerSoftSettle();
-        }, 220);
       }
     },
     { passive: true }

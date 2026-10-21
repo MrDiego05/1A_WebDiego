@@ -8,7 +8,7 @@
   min-width: calc(100vw - 20px) !important;
   max-width: calc(100vw - 20px) !important;
   width: calc(100vw - 20px) !important;
-  height: calc(100vh - 80px) !important;
+  height: calc(100dvh - 80px) !important;
   margin: 70px 10px 10px 10px !important;
   border-radius: 28px !important;
   background-color: transparent;
@@ -209,6 +209,26 @@
 }
 
 @media (max-width: 640px) {
+  .hero-unified-canvas {
+    height: calc(100dvh - 72px) !important;
+    margin: 62px 10px 10px 10px !important;
+    padding: 58px 24px 88px;
+    align-items: flex-end;
+  }
+
+  .hero-left {
+    max-width: 100%;
+  }
+
+  .hero-name {
+    font-size: clamp(38px, 12vw, 52px);
+  }
+
+  .hero-desc {
+    font-size: 13px;
+    margin-bottom: 22px;
+  }
+
   .hero-sketch-layer {
     left: 50%;
     width: 80vw;

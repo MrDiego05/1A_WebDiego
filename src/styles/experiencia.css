@@ -141,3 +141,14 @@
     gap: 24px;
   }
 }
+
+@media (max-width: 560px) {
+  .exp-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .exp-item,
+  .tech-block {
+    padding: 16px;
+  }
+}

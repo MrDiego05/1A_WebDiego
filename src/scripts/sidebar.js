@@ -41,6 +41,12 @@ export function initSidebar() {
     document.documentElement.setAttribute("data-theme", savedTheme);
   }
 
+  // Bind controls from JavaScript instead of relying on inline handlers. This
+  // is reliable for Astro's module scripts and avoids a missing global handler
+  // disabling the navigation controls.
+  document.getElementById("sidebar-dark-toggle")?.addEventListener("click", window.toggleDark);
+  document.getElementById("sidebar-a11y-toggle")?.addEventListener("click", window.toggleA11yPanel);
+
   // ── Close A11y Panel on Escape ─────────────────────────
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && a11yPanelOpen) {

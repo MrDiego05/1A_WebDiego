@@ -24,7 +24,7 @@
 }
 
 #dev-toolbar-root {
-  display: hidden;
+  display: none !important;
 }
 
 /* ── Dark Mode Tokens ── */
@@ -100,7 +100,7 @@
 html,
 body {
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -159,10 +159,11 @@ body::before {
   flex-wrap: nowrap !important;
   align-items: stretch !important;
   width: 100vw !important;
-  height: 100vh !important;
+  height: 100dvh !important;
   overflow-x: auto !important;
   overflow-y: hidden !important;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
   scrollbar-width: none;
 }
 
@@ -177,7 +178,7 @@ body::before {
   min-width: calc(100vw - 20px) !important;
   max-width: calc(100vw - 20px) !important;
   width: calc(100vw - 20px) !important;
-  height: calc(100vh - 80px) !important;
+  height: calc(100dvh - 80px) !important;
   margin: 70px 10px 10px 10px !important;
   border-radius: 28px !important;
   background-color: #f4f4f6;
@@ -476,8 +477,20 @@ body::before {
 }
 
 @media (max-width: 768px) {
+  .horizontal-scroll-container,
+  #main-horizontal-container {
+    scroll-snap-type: x mandatory;
+  }
+
   .snap-section {
-    padding: 75px 20px 60px 20px;
+    height: calc(100dvh - 72px) !important;
+    margin: 62px 10px 10px 10px !important;
+    padding: 34px 20px 88px 20px;
+    overflow-y: auto !important;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
 
   .nav-container {
@@ -488,6 +501,7 @@ body::before {
   .floating-capsule-nav {
     gap: 4px;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
   }
 
   .nav-pill {
@@ -498,5 +512,11 @@ body::before {
   .nav-container .sidebar-btn {
     width: 36px;
     height: 36px;
+  }
+
+  .pill-exp,
+  .pill-proyectos,
+  .pill-contacto {
+    min-width: max-content;
   }
 }
